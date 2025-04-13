@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suggestions API Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        h1 {
+            color: #333;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        button:hover {
+            background-color: #45a049;
+        }
+        
+        .loading {
+            display: none;
+            margin-top: 20px;
+        }
+        
+        .results {
+            display: none;
+            margin-top: 20px;
+        }
+        
+        .suggestion-item {
+            background-color: #f9f9f9;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+        
+        .suggestion-title {
+            font-weight: bold;
+        }
+        
+        .suggestion-reason {
+            color: #777;
+            font-size: 0.9em;
+        }
+        
+        pre {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Suggestions API Test</h1>
+    
+    <div class="form-group">
+        <label for="trip-type">Trip Type</label>
+        <select id="trip-type">
+            <option value="Trek">Trek</option>
+            <option value="Business Trip">Business Trip</option>
+            <option value="Hackathon">Hackathon</option>
+            <option value="College Fest">College Fest</option>
+        </select>
+    </div>
+    
+    <div class="form-group">
+        <label for="destination">Destination</label>
+        <input type="text" id="destination" value="Seattle" placeholder="e.g., Seattle, Dubai, London">
+    </div>
+    
+    <div class="form-group">
+        <label for="duration-days">Duration (days)</label>
+        <input type="number" id="duration-days" value="5" min="1">
+    </div>
+    
+    <div class="form-group">
+        <label for="group-size">Group Size</label>
+        <input type="number" id="group-size" value="4" min="1">
+    </div>
+    
+    <button id="get-suggestions">Get Suggestions</button>
+    
+    <div id="loading" class="loading">
+        <p>Loading suggestions...</p>
+    </div>
+    
+    <div id="results" class="results">
+        <h2>Suggestions</h2>
+        <div id="suggestions-list"></div>
+    </div>
+    
+    <div id="debug">
+        <h2>Debug Info</h2>
+        <h3>Request:</h3>
+        <pre id="request-data"></pre>
+        <h3>Response:</h3>
+        <pre id="response-data"></pre>
+    </div>
+    
+    <script>
+        document.getElementById('get-suggestions').addEventListener('click', async () => {
+            // Get form values
+            const tripType = document.getElementById('trip-type').value;
+            const destination = document.getElementById('destination').value;
+            const durationDays = parseInt(document.getElementById('duration-days').value);
+            const groupSize = parseInt(document.getElementById('group-size').value);
+            
+            // Create request data
+            const requestData = {
+                trip_type: tripType,
+                destination: destination,
+                duration_days: durationDays,
+                group_size: groupSize
+            };
+            
+            // Display request data
+            document.getElementById('request-data').textContent = JSON.stringify(requestData, null, 2);
+            
+            // Show loading
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('results').style.display = 'none';
+            
+            try {
+                // Make API request
+                const response = await fetch('http://localhost:5000/api/suggestions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestData)
+                });
+                
+                // Parse response
+                const data = await response.json();
+                
+                // Display response data
+                document.getElementById('response-data').textContent = JSON.stringify(data, null, 2);
+                
+                // Render suggestions
+                const suggestionsList = document.getElementById('suggestions-list');
+                suggestionsList.innerHTML = '';
+                
+                if (data.suggestions && data.suggestions.length > 0) {
+                    data.suggestions.forEach(suggestion => {
+                        const item = document.createElement('div');
+                        item.className = 'suggestion-item';
+                        item.innerHTML = `
+                            <div class="suggestion-title">${suggestion.title}</div>
+                            <div class="suggestion-reason">${suggestion.reason}</div>
+                        `;
+                        suggestionsList.appendChild(item);
+                    });
+                } else {
+                    suggestionsList.innerHTML = '<p>No suggestions found.</p>';
+                }
+                
+                // Hide loading, show results
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('results').style.display = 'block';
+                
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('response-data').textContent = `Error: ${error.message}`;
+                document.getElementById('loading').style.display = 'none';
+                alert('Error getting suggestions: ' + error.message);
+            }
+        });
+    </script>
+</body>
+</html> 
