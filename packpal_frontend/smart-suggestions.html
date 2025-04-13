@@ -1,0 +1,56 @@
+<!-- Smart Suggestions Modal -->
+<div class="modal" id="smart-suggestions-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Smart Suggestions</h3>
+            <button class="modal-close" id="suggestions-close">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <form id="trip-details-form">
+                <div class="form-group">
+                    <label for="trip-type">Trip Type</label>
+                    <input type="text" id="trip-type" placeholder="e.g. Camping, Business Trip, College Fest" required>
+                </div>
+                <div class="form-group">
+                    <label for="destination">Destination</label>
+                    <input type="text" id="destination" placeholder="e.g. Seattle, London, Dubai" required>
+                </div>
+                <div class="form-group">
+                    <label for="duration-days">Duration (Days)</label>
+                    <input type="number" id="duration-days" min="1" value="5" required>
+                </div>
+                <div class="form-group">
+                    <label for="group-size">Group Size</label>
+                    <input type="number" id="group-size" min="1" value="4" required>
+                </div>
+                <button type="button" id="get-suggestions-btn" class="btn btn-primary btn-block">Get Suggestions</button>
+            </form>
+            <div id="suggestions-loading" style="display: none;">
+                <div class="loading-spinner"></div>
+                <p>Getting suggestions based on your trip details...</p>
+            </div>
+            <div id="suggestions-results" style="display: none;">
+                <div class="form-group">
+                    <label for="suggestions-status">Add items with status</label>
+                    <div class="select-container">
+                        <select id="suggestions-status" required>
+                            <option value="To Pack" selected>To Pack</option>
+                            <option value="Packed">Packed</option>
+                            <option value="Delivered">Delivered</option>
+                        </select>
+                        <i class="fas fa-chevron-down select-icon"></i>
+                    </div>
+                </div>
+                <div id="suggestions-list" class="suggestions-list">
+                    <!-- Suggestions will be added here -->
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" id="suggestions-cancel">Cancel</button>
+            <button class="btn btn-primary" id="add-selected-suggestions-btn" style="display: none;">Add Selected Items</button>
+        </div>
+    </div>
+</div> 
